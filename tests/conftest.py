@@ -17,19 +17,22 @@ def setup_accounts():
     if active_network not in ["development", "mainnet-fork", "hardhat", "hardhat-fork"]:
         if len(accounts) == 0:
             accounts.add(config["wallets"]["from_key"])
+            for _ in range(3):
+                accounts.add()
+            print("\nFunding testnet burner accounts for multi-user testing...")
+            for i in range(1, 4):
+                accounts[0].transfer(accounts[i], "0.01 ether")
 
 
 @pytest.fixture(scope="function", autouse=True)
-def isolate():
+def isolate(fn_isolation):
     """
-    Isolate each test function to ensure clean state
+    Isolate each test function to ensure clean state.
+    By passing 'fn_isolation' as an argument, Brownie automatically 
+    takes a snapshot before the test and reverts to it after,
+    but ONLY if running on a local development network.
     """
-    active_network = network.show_active()
-    if active_network not in ["development", "mainnet-fork", "hardhat", "hardhat-fork"]:
-        yield
-        return
-    from brownie.test.fixtures import fn_isolation
-    yield from fn_isolation()
+    pass
 
 
 @pytest.fixture(scope="module")

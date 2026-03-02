@@ -72,7 +72,7 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 
 6. **Run tests:**
    ```bash
-   brownie test --network rootstock-testnet
+   brownie test
    ```
 
 ## 📁 Project Structure
@@ -80,25 +80,26 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 ```
 .
 ├── contracts/              # Vyper contracts
-│   ├── ERC20.vy          # ERC20 token implementation
-│   └── Vault.vy          # Vault contract
-├── tests/                 # Test files
-│   ├── conftest.py       # Pytest fixtures
-│   ├── test_erc20.py     # ERC20 tests
-│   └── test_vault.py     # Vault tests
+│   ├── ERC20.vy           # ERC20 token implementation
+│   └── Vault.vy           # Vault contract
 ├── scripts/               # Deployment scripts
-│   ├── deploy.py         # Deploy contracts
-│   ├── verify.py         # Verify contracts
-│   ├── setup_networks.py # Setup Rootstock networks
-│   └── analyze.py        # Security analysis
-├── brownie-config.yaml    # Brownie configuration
+│   ├── deploy.py          # Deploy contracts
+│   ├── verify.py          # Verify contracts
+│   ├── setup_networks.py  # Setup Rootstock 
+├── tests/                 # Test files
+│   ├── conftest.py        # Pytest fixtures
+│   ├── test_erc20.py      # ERC20 tests
+│   └── test_vault.py      # Vault tests
+├── brownie-config.yaml    # Brownie config
+├── .gitignore             
+├── .env.example           # sample for .env
 ├── requirements.txt       # Python dependencies
-├── replit.nix            # Replit Nix configuration
-├── .replit               # Replit run configuration
-├── pytest.ini            # Pytest configuration
-├── SECURITY.md           # Security documentation
-├── MIGRATION.md          # Solidity → Vyper cheat-sheet
-└── README.md             # This file
+├── replit.nix             # Replit Nix config
+├── .replit                # Replit run config
+├── pytest.ini             # Pytest config
+├── SECURITY.md            # Security docs
+├── MIGRATION.md           # Solidity → Vyper cheat-sheet
+└── README.md              # This file
 ```
 
 ## 🔧 Configuration
@@ -118,7 +119,7 @@ brownie networks add Ethereum rootstock-mainnet host=https://public-node.rsk.co 
 
 ### Environment Variables
 
-Create a `.env` file (or set in Replit Secrets):
+Create a `.env` file following the `.env.example` (or set in Replit Secrets):
 
 ```env
 PRIVATE_KEY=your_private_key_here
@@ -278,21 +279,21 @@ brownie run scripts/<script_name> --network <network>
 ### Testnet
 - **Chain ID**: 31
 - **RPC**: https://public-node.testnet.rsk.co
-- **Explorer**: https://explorer.testnet.rsk.co
+- **Explorer**: https://rootstock-testnet.blockscout.com/
 - **Faucet**: https://faucet.rsk.co/
 
 ### Mainnet
 - **Chain ID**: 30
 - **RPC**: https://public-node.rsk.co
-- **Explorer**: https://blockscout.com/rsk/mainnet
+- **Explorer**: https://rootstock.blockscout.com/
 
 ## 📦 Dependencies
 
-- **eth-brownie** >= 1.19.0 - Development framework
-- **vyper** >= 0.3.10, < 0.4.0 - Vyper compiler
-- **pytest** >= 7.0.0 - Testing framework
-- **slither-analyzer** >= 0.9.0 - Static analysis
-- **python-dotenv** >= 1.0.0 - Environment variables
+- **eth-brownie** ==1.20.0 - Development framework
+- **vyper** ==0.3.10 - Vyper compiler
+- **pytest** ==4.1.0 - Testing framework
+- **slither-analyzer** ==0.9.6 - Static analysis
+- **python-dotenv** ==0.16.0 - Environment variables
 
 ## 🐛 Troubleshooting
 

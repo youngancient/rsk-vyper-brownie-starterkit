@@ -17,6 +17,16 @@ def get_account():
     else:
         return accounts.add(config["wallets"]["from_key"])
 
+def get_tx_params(account):
+    """
+    Generate transaction parameters, forcing legacy gas for Rootstock
+    """
+    params = {"from": account}
+    # RSK requires legacy Type 0 transactions. 0.06 gwei is a safe default.
+    if "rootstock" in network.show_active():
+        params["gas_price"] = "0.065 gwei" 
+        params["required_confs"] = 1  # Wait for 1 RSK block confirmation (~30 secs)
+    return params
 
 def save_deployment_info(contract_name, contract_address, network_name):
     """
@@ -54,7 +64,7 @@ def deploy_erc20():
     print("=" * 60)
     
     account = get_account()
-    
+    tx_params = get_tx_params(account)
     # Token parameters
     name = "Rootstock Starter Token"
     symbol = "RST"
@@ -74,7 +84,7 @@ def deploy_erc20():
         symbol,
         decimals,
         initial_supply,
-        {"from": account}
+        tx_params
     )
     
     print(f"\n✅ ERC20 Token deployed at: {token.address}")
@@ -95,7 +105,8 @@ def deploy_vault(token_address):
     print("=" * 60)
     
     account = get_account()
-    
+    tx_params = get_tx_params(account)
+
     print(f"Token Address: {token_address}")
     print(f"Deploying from: {account.address}")
     print(f"Network: {network.show_active()}")
@@ -103,7 +114,7 @@ def deploy_vault(token_address):
     # Deploy
     vault = Vault.deploy(
         token_address,
-        {"from": account}
+        tx_params
     )
     
     print(f"\n✅ Vault deployed at: {vault.address}")
@@ -140,6 +151,6 @@ def main():
     print("\n✅ Deployment complete!")
     print("\nNext steps:")
     print("1. Verify contracts: brownie run scripts/verify --network <network>")
-    print("2. Check deployments/deployments/<network>.json for addresses")
+    print("2. Check deployments/<network>.json for addresses")
     print("=" * 60)
 

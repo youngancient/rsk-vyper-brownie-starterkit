@@ -1,5 +1,6 @@
 language = "python3"
 run = "brownie compile"
+build = "pip install -r requirements.txt && npm install ganache"
 
 [nix]
 channel = "stable-22_11"
@@ -9,4 +10,7 @@ run = ["sh", "-c", "brownie run scripts/deploy --network rootstock-testnet"]
 
 [env]
 PYTHONUNBUFFERED = "1"
+PATH = "${REPLIT_HOME}/.local/bin:${REPLIT_HOME}/node_modules/.bin:${PATH}"
 
+[packager]
+ignoredPaths = [".venv", "venv"]

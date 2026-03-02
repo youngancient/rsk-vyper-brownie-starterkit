@@ -1,5 +1,6 @@
 # Brownie Configuration for Rootstock Networks
 # https://www.brownie-console.com/
+dotenv: .env
 
 dependencies:
   # Add any dependencies here if needed
@@ -8,19 +9,20 @@ dependencies:
 compiler:
   vyper:
     version: "0.3.10"
+    evm_version: "london"
 
 networks:
   # Rootstock Testnet
   rootstock-testnet:
     host: ${RSK_TESTNET_RPC:-https://public-node.testnet.rsk.co}
     chainid: 31
-    explorer: https://explorer.testnet.rsk.co/api
+    explorer: https://rootstock-testnet.blockscout.com/api
     
   # Rootstock Mainnet
   rootstock-mainnet:
     host: ${RSK_MAINNET_RPC:-https://public-node.rsk.co}
     chainid: 30
-    explorer: https://blockscout.com/rsk/mainnet/api
+    explorer: https://rootstock.blockscout.com/api
 
 # Wallet settings
 wallets:

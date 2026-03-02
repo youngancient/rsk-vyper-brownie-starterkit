@@ -94,8 +94,8 @@ brownie networks list
 ### Step 5: Run Tests
 
 ```bash
-# Run all tests on testnet
-brownie test --network rootstock-testnet
+# Run all tests
+brownie test
 ```
 
 **Expected output:**
@@ -117,13 +117,13 @@ tests/test_vault.py::test_vault_deployment PASSED
 **Run specific test files:**
 ```bash
 # Test only ERC20
-brownie test tests/test_erc20.py --network rootstock-testnet
+brownie test tests/test_erc20.py
 
 # Test only Vault
-brownie test tests/test_vault.py --network rootstock-testnet
+brownie test tests/test_vault.py
 
 # Run with verbose output
-brownie test -v --network rootstock-testnet
+brownie test -v
 ```
 
 ### Step 6: Security Analysis
