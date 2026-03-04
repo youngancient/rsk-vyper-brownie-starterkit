@@ -2,9 +2,10 @@ modules = ["python-3.10", "nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["solc"]
 
 [workflows]
-runButton = "Boot_And_Test"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Boot_And_Test"
@@ -13,30 +14,16 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = """
-echo '🚀 Booting up Rootstock Starter Kit...'
+args = "bash -c 'echo \"🚀 Booting up Rootstock Starter Kit...\" && if [ ! -f .env ]; then echo \"Creating default .env file...\"; echo \"PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000001\" > .env; fi && export PATH=\"$PWD/.pythonlibs/bin:$PWD/node_modules/.bin:$PATH\" && export PYTHONPATH=\"$PWD/.pythonlibs/lib/python3.10/site-packages\" && echo \"🧪 Running Smart Contract Tests...\" && brownie test'"
 
-# 1. Create dummy .env if it does not exist
-if [ ! -f .env ]; then
-    echo 'Creating default .env file...'
-    echo 'PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000001' > .env
-fi
+[workflows.workflow.metadata]
+outputType = "console"
 
-# 2. Force the correct paths
-export PATH="$HOME/.local/bin:$PWD/node_modules/.bin:$PATH"
-export PYTHONPATH="$HOME/.local/lib/python3.10/site-packages"
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
 
-# 3. Install dependencies without permission errors
-echo '📦 Installing dependencies...'
-pip install --user -r requirements.txt --disable-pip-version-check -q
-npm install ganache --silent
-
-# 4. Fix Ganache CLI symlink for Brownie
-if [ ! -f node_modules/.bin/ganache-cli ]; then
-    ln -s $PWD/node_modules/.bin/ganache $PWD/node_modules/.bin/ganache-cli
-fi
-
-# 5. Execute the tests
-echo '🧪 Running Smart Contract Tests...'
-brownie test
-"""
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Boot_And_Test"
