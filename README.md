@@ -1,4 +1,6 @@
-# Vyper + Brownie Starter Kit on Replit
+<img src="./rootstock-banner.png" alt="RSK Logo" style="width:100%; height: auto;" />
+
+# RSK Vyper + Brownie Starter Kit on Replit
 
 The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and deploy Vyper contracts to Rootstock testnet entirely in the browser.
 
@@ -35,6 +37,8 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
    ```bash
    brownie run scripts/deploy --network rootstock-testnet
    ```
+
+⚠️ **Educational only. Not audited. Do NOT deploy to mainnet.**
 
 ### Local Setup:
 
@@ -346,12 +350,6 @@ This is a starter kit for educational purposes. Always:
 - Test thoroughly on testnets
 - Follow security best practices
 - Get professional security reviews
-
-## 🙏 Acknowledgments
-
-- Rootstock team for network support
-- Vyper community
-- Brownie framework developers
 
 ---
 
