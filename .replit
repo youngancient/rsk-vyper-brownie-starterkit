@@ -1,16 +1,42 @@
-language = "python3"
-run = "brownie compile"
-build = "pip install -r requirements.txt && npm install ganache"
+modules = ["python-3.10", "nodejs-20"]
 
 [nix]
-channel = "stable-22_11"
+channel = "stable-24_05"
 
-[deploy]
-run = ["sh", "-c", "brownie run scripts/deploy --network rootstock-testnet"]
+[workflows]
+runButton = "Boot_And_Test"
 
-[env]
-PYTHONUNBUFFERED = "1"
-PATH = "${REPLIT_HOME}/.local/bin:${REPLIT_HOME}/node_modules/.bin:${PATH}"
+[[workflows.workflow]]
+name = "Boot_And_Test"
+mode = "sequential"
+author = "agent"
 
-[packager]
-ignoredPaths = [".venv", "venv"]
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+echo '🚀 Booting up Rootstock Starter Kit...'
+
+# 1. Create dummy .env if it does not exist
+if [ ! -f .env ]; then
+    echo 'Creating default .env file...'
+    echo 'PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000001' > .env
+fi
+
+# 2. Force the correct paths
+export PATH="$HOME/.local/bin:$PWD/node_modules/.bin:$PATH"
+export PYTHONPATH="$HOME/.local/lib/python3.10/site-packages"
+
+# 3. Install dependencies without permission errors
+echo '📦 Installing dependencies...'
+pip install --user -r requirements.txt --disable-pip-version-check -q
+npm install ganache --silent
+
+# 4. Fix Ganache CLI symlink for Brownie
+if [ ! -f node_modules/.bin/ganache-cli ]; then
+    ln -s $PWD/node_modules/.bin/ganache $PWD/node_modules/.bin/ganache-cli
+fi
+
+# 5. Execute the tests
+echo '🧪 Running Smart Contract Tests...'
+brownie test
+"""
