@@ -240,7 +240,6 @@ def emergencyWithdraw(_amount: uint256):
     vault_balance: uint256 = ERC20(self.token).balanceOf(self)
     assert vault_balance >= _amount, "Insufficient balance"
     
-    # CRITICAL FIX: Update totalAssets to maintain correct state
     # Only reduce totalAssets if there are actual assets tracked
     if _amount <= self.totalAssets:
         self.totalAssets -= _amount
