@@ -3,6 +3,9 @@ build/
 .reports/
 .cache/
 .brownie/
+hardhat.config.js
+
+reports/
 
 # Python
 __pycache__/
