@@ -365,3 +365,59 @@ def test_full_workflow_multi_user(vault, token, deployer, user1, user2):
     # User1 still has shares and assets remain
     assert vault.totalAssets() > 0
     assert vault.totalShares() > 0
+
+
+@pytest.mark.unit
+def test_very_small_deposit_shares(vault, token, deployer, approved_vault_user1, user2):
+    """
+    Test that very small deposits do not result in 0 shares 
+    due to virtual offset calculation and safely execute.
+    """
+    amount1 = 1000 * 10**18
+    vault.deposit(amount1, {"from": approved_vault_user1})
+    
+    # User2 attempts a fractional dust deposit (1 wei)
+    token.transfer(user2, 1, {"from": deployer})
+    token.approve(vault.address, 1, {"from": user2})
+    
+    # Should succeed and grant >0 shares
+    vault.deposit(1, {"from": user2})
+    assert vault.shares(user2) > 0
+
+
+@pytest.mark.unit
+def test_withdraw_after_emergencyWithdraw(vault, token, deployer, approved_vault_user1):
+    """
+    Test user withdrawal behavior after emergencyWithdraw
+    """
+    amount = 100 * 10**18
+    vault.deposit(amount, {"from": approved_vault_user1})
+    
+    # Owner emergency withdraws half the assets
+    emergency_amount = 50 * 10**18
+    vault.emergencyWithdraw(emergency_amount, {"from": deployer})
+    
+    # User should still be able to withdraw remaining assets correctly
+    tx = vault.withdrawAll({"from": approved_vault_user1})
+    
+    # They should get back exactly what's left
+    assert tx.events["Withdraw"]["amount"] == 50 * 10**18
+
+
+@pytest.mark.unit
+def test_non_standard_erc20_returns_false(deployer, user1):
+    """
+    Test vault interaction with an ERC20 that returns False on failure
+    """
+    import brownie
+    # Assuming MockTokenReturnsFalse is compiled
+    token = brownie.MockTokenReturnsFalse.deploy({"from": deployer})
+    vault = brownie.Vault.deploy(token.address, {"from": deployer})
+    
+    # user1 has 0 tokens, the transferFrom inside deposit will return False
+    token.approve(vault.address, 100, {"from": user1})
+    
+    # Vault should catch the False return value and revert
+    with reverts("Transfer failed"):
+        vault.deposit(100, {"from": user1})
+
