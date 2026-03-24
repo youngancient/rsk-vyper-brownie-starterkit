@@ -47,7 +47,7 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 1. **Clone the repository:**
    ```bash
    git clone <repository-url>
-   cd vyper
+   cd rsk-vyper-brownie-starterkit
    ```
 
 2. **Install dependencies:**
@@ -88,15 +88,19 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 ├── contracts/              # Vyper contracts
 │   ├── ERC20.vy           # ERC20 token implementation
 │   └── Vault.vy           # Vault contract
+├── reports/               # Testing & coverage output
 ├── scripts/               # Deployment scripts
 │   ├── deploy.py          # Deploy contracts
 │   ├── verify.py          # Verify contracts
 │   ├── setup_networks.py  # Setup Rootstock 
+│   └── verify_setup.py    # Verify environment setup
 ├── tests/                 # Test files
 │   ├── conftest.py        # Pytest fixtures
 │   ├── test_erc20.py      # ERC20 tests
 │   └── test_vault.py      # Vault tests
 ├── brownie-config.yaml    # Brownie config
+├── hardhat.config.js      # Hardhat config (Brownie generated)
+├── .slither.config.json   # Slither analysis config
 ├── .gitignore             
 ├── .env.example           # sample for .env
 ├── requirements.txt       # Python dependencies
@@ -105,6 +109,7 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 ├── pytest.ini             # Pytest config
 ├── SECURITY.md            # Security docs
 ├── MIGRATION.md           # Solidity → Vyper cheat-sheet
+├── TESTING_GUIDE.md       # Comprehensive testing guide
 └── README.md              # This file
 ```
 
