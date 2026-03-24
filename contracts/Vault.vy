@@ -140,9 +140,6 @@ def deposit(_amount: uint256) -> uint256:
     """
     assert _amount > 0, "Amount must be greater than 0"
     
-    # Transfer tokens from user to vault
-    assert ERC20(self.token).transferFrom(msg.sender, self, _amount), "Transfer failed"
-    
     # Calculate shares using virtual offset (prevents inflation attack)
     # Formula: shares = (amount * (totalShares + VIRTUAL_SHARES)) / (totalAssets + VIRTUAL_ASSETS)
     shares_to_mint: uint256 = (_amount * self._totalSharesWithVirtual()) / self._totalAssetsWithVirtual()
@@ -153,6 +150,9 @@ def deposit(_amount: uint256) -> uint256:
     self.totalShares += shares_to_mint
     self.totalAssets += _amount
     self.shares[msg.sender] += shares_to_mint
+    
+    # Transfer tokens from user to vault
+    assert ERC20(self.token).transferFrom(msg.sender, self, _amount), "Transfer failed"
     
     log Deposit(msg.sender, _amount, shares_to_mint)
     return shares_to_mint
