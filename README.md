@@ -297,9 +297,9 @@ brownie run scripts/<script_name> --network <network>
 
 - **eth-brownie** ==1.20.0 - Development framework
 - **vyper** ==0.3.10 - Vyper compiler
-- **pytest** ==4.1.0 - Testing framework
+- **pytest-cov** ==4.1.0 - Testing framework coverage
 - **slither-analyzer** ==0.9.6 - Static analysis
-- **python-dotenv** ==0.16.0 - Environment variables
+- **python-dotenv** ==1.0.1 - Environment variables
 
 ## Troubleshooting
 
