@@ -4,10 +4,14 @@ Simple Vault Contract with Deposit/Withdraw Functionality
 
 SECURITY FEATURES:
 - Virtual shares (dead shares) to prevent inflation attacks
-- Proper state updates in emergency functions
 - Checked arithmetic throughout
 
-Note: For production use, consider implementing ERC4626 standard.
+🚨 WARNING
+- The emergencyWithdraw function is a known rug-pull vector. It allows the admin 
+  to drain funds without adjusting totalShares, breaking vault accounting and 
+  stealing value from depositors.
+- For production use, implement a Timelock, Multi-sig, or strict Pausable pattern.
+- Consider implementing the ERC4626 standard.
 """
 
 from vyper.interfaces import ERC20
@@ -125,6 +129,7 @@ def convertToAssets(_shares: uint256) -> uint256:
 
 
 @external
+@nonreentrant("lock")
 def deposit(_amount: uint256) -> uint256:
     """
     Deposit tokens into the vault and receive shares
@@ -154,6 +159,7 @@ def deposit(_amount: uint256) -> uint256:
 
 
 @external
+@nonreentrant("lock")
 def withdraw(_shares: uint256) -> uint256:
     """
     Withdraw tokens from the vault by burning shares
@@ -183,6 +189,7 @@ def withdraw(_shares: uint256) -> uint256:
 
 
 @external
+@nonreentrant("lock")
 def withdrawAll() -> uint256:
     """
     Withdraw all tokens for the caller
@@ -227,10 +234,21 @@ def transferOwnership(_new_owner: address):
 
 
 @external
+@nonreentrant("lock")
 def emergencyWithdraw(_amount: uint256):
     """
     Emergency withdraw function for owner
-    WARNING: This will affect share calculations. Use with extreme caution.
+    
+    🚨 DANGER: RUG-PULL VECTOR 🚨
+    The owner can drain deposited funds at any time. While totalAssets is 
+    reduced, totalShares is not adjusted. This means after an emergency withdrawal, 
+    all remaining users' shares point to fewer assets — effectively stealing 
+    value from depositors.
+    
+    For a production environment, this should either:
+    - Include a timelock or multi-sig requirement
+    - Burn proportional owner shares when performing the withdrawal
+    - Be replaced with a contract pause mechanism
     
     :param _amount: Amount of tokens to withdraw
     """
