@@ -53,7 +53,7 @@ def run_slither():
     
     try:
         result = subprocess.run(
-            ["slither", ".", "--vyper"],
+            ["slither", "."],
             capture_output=True,
             text=True
         )

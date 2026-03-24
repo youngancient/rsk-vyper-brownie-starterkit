@@ -256,11 +256,8 @@ def test_transfer_zero_amount(token, deployer, user1):
     """
     Test transfer with zero amount
     """
-    initial_balance = token.balanceOf(user1)
-    
-    token.transfer(user1, 0, {"from": deployer})
-    
-    assert token.balanceOf(user1) == initial_balance
+    with reverts("Amount must be greater than 0"):
+        token.transfer(user1, 0, {"from": deployer})
 
 
 @pytest.mark.unit
