@@ -261,6 +261,17 @@ def test_transfer_zero_amount(token, deployer, user1):
 
 
 @pytest.mark.unit
+def test_transfer_to_self(token, deployer):
+    """
+    Test transfer to self (edge case)
+    """
+    amount = 50 * 10**18
+    
+    with reverts("Cannot transfer to self"):
+        token.transfer(deployer, amount, {"from": deployer})
+
+
+@pytest.mark.unit
 def test_allowance_view(token, deployer, user1):
     """
     Test allowance view function

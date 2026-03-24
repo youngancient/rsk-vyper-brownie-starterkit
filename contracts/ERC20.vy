@@ -62,6 +62,7 @@ def transfer(_to: address, _value: uint256) -> bool:
     """
     # SECURITY: Prevent burning tokens by sending to zero address
     assert _to != empty(address), "Cannot transfer to zero address"
+    assert _to != msg.sender, "Cannot transfer to self"
     assert _value > 0, "Amount must be greater than 0"
     assert self.balanceOf[msg.sender] >= _value, "Insufficient balance"
     
@@ -84,6 +85,7 @@ def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
     """
     # SECURITY: Prevent burning tokens by sending to zero address
     assert _to != empty(address), "Cannot transfer to zero address"
+    assert _to != _from, "Cannot transfer to self"
     assert _value > 0, "Amount must be greater than 0"
     assert self.allowance[_from][msg.sender] >= _value, "Insufficient allowance"
     assert self.balanceOf[_from] >= _value, "Insufficient balance"
