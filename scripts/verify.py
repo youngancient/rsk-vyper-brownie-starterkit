@@ -29,7 +29,7 @@ def get_explorer_api_url(network_name):
     Get explorer API URL for the network
     """
     if network_name == "rootstock-testnet":
-        return "https://explorer.testnet.rsk.co/api"
+        return "https://rootstock-testnet.blockscout.com/api"
     elif network_name == "rootstock-mainnet":
         return "https://blockscout.com/rsk/mainnet/api"
     else:

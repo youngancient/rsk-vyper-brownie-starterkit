@@ -2,6 +2,8 @@
 
 # RSK Vyper + Brownie Starter Kit on Replit
 
+> 🚨 **DEPRECATION WARNING**: `eth-brownie` is officially deprecated and no longer actively maintained. The Brownie team recommends migrating to **Ape Framework** (its spiritual successor with native Vyper support) or **Foundry**. Using `eth-brownie==1.20.0` means inheriting unpatched vulnerabilities and lacking compatibility with newer Python/Vyper versions. This starter kit is provided for **educational purposes only**.
+
 The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and deploy Vyper contracts to Rootstock testnet entirely in the browser.
 
 ## Features
