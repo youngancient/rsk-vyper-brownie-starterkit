@@ -304,7 +304,7 @@ brownie run scripts/<script_name> --network <network>
 - **vyper** ==0.3.10 - Vyper compiler
 - **pytest-cov** ==4.1.0 - Testing framework coverage
 - **slither-analyzer** ==0.9.6 - Static analysis
-- **python-dotenv** ==1.0.1 - Environment variables
+- **python-dotenv** ==0.16.0 - Environment variables
 
 ## Troubleshooting
 

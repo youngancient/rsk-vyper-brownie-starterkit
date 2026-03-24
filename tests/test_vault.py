@@ -241,6 +241,16 @@ def test_ownership_transfer_only_owner(vault, user1, user2):
 
 
 @pytest.mark.unit
+def test_ownership_transfer_invalid_address(vault, deployer):
+    """
+    Test ownership transfer to zero address
+    """
+    import brownie
+    with reverts("Invalid address"):
+        vault.transferOwnership(brownie.ZERO_ADDRESS, {"from": deployer})
+
+
+@pytest.mark.unit
 def test_emergency_withdraw_updates_state(vault, token, deployer, approved_vault_user1):
     """
     Test emergency withdraw properly updates totalAssets
@@ -420,4 +430,93 @@ def test_non_standard_erc20_returns_false(deployer, user1):
     # Vault should catch the False return value and revert
     with reverts("Transfer failed"):
         vault.deposit(100, {"from": user1})
+        
 
+@pytest.mark.unit
+def test_non_standard_erc20_withdrawals_return_false(deployer, user1):
+    """
+    Test that withdraw, withdrawAll, and emergencyWithdraw revert if token transfer returns False
+    """
+    import brownie
+    token = brownie.MockTokenReturnsFalse.deploy({"from": deployer})
+    vault = brownie.Vault.deploy(token.address, {"from": deployer})
+    
+    # Give user1 some tokens to deposit successfully
+    amount = 100 * 10**18
+    # We shouldn't use token.transfer here as it returns bool, but we can call it
+    token.transfer(user1, amount, {"from": deployer})
+    token.approve(vault.address, amount, {"from": user1})
+    vault.deposit(amount, {"from": user1})
+    
+    # Drain vault's token balance so that transfer returns False
+    token.drain(vault.address, {"from": deployer})
+    
+    with reverts("Transfer failed"):
+        vault.withdraw(vault.shares(user1), {"from": user1})
+
+@pytest.mark.unit
+def test_withdrawAll_erc20_returns_false(deployer, user1):
+    import brownie
+    token = brownie.MockTokenReturnsFalse.deploy({"from": deployer})
+    vault = brownie.Vault.deploy(token.address, {"from": deployer})
+    amount = 100 * 10**18
+    token.transfer(user1, amount, {"from": deployer})
+    token.approve(vault.address, amount, {"from": user1})
+    vault.deposit(amount, {"from": user1})
+    token.drain(vault.address, {"from": deployer})
+    with reverts("Transfer failed"):
+        vault.withdrawAll({"from": user1})
+
+@pytest.mark.unit
+def test_emergencyWithdraw_erc20_returns_false(deployer, user1):
+    import brownie
+    token = brownie.MockTokenReturnsFalse.deploy({"from": deployer})
+    vault = brownie.Vault.deploy(token.address, {"from": deployer})
+    amount = 100 * 10**18
+    token.transfer(user1, amount, {"from": deployer})
+    token.approve(vault.address, amount, {"from": user1})
+    vault.deposit(amount, {"from": user1})
+    token.drain(vault.address, {"from": deployer})
+    with reverts("Insufficient balance"):
+        vault.emergencyWithdraw(amount, {"from": deployer})
+
+@pytest.mark.unit
+def test_withdraw_amount_too_small(vault, token, deployer, user1):
+    amount1 = 1000 * 10**18
+    token.transfer(user1, amount1, {"from": deployer})
+    token.approve(vault.address, amount1, {"from": user1})
+    vault.deposit(amount1, {"from": user1})
+    with reverts("Withdrawal amount too small"):
+        vault.withdraw(1, {"from": user1})
+
+@pytest.mark.unit
+def test_withdrawAll_amount_too_small(vault, token, deployer, user1):
+    amount1 = 1
+    token.transfer(user1, amount1, {"from": deployer})
+    token.approve(vault.address, amount1, {"from": user1})
+    vault.deposit(amount1, {"from": user1})
+    vault.emergencyWithdraw(1, {"from": deployer})
+    with reverts("Withdrawal amount too small"):
+        vault.withdrawAll({"from": user1})
+
+@pytest.mark.unit
+def test_emergencyWithdraw_more_than_tracked(vault, token, deployer):
+    amount = 100 * 10**18
+    token.transfer(vault.address, amount, {"from": deployer})
+    vault.emergencyWithdraw(amount, {"from": deployer})
+    assert vault.totalAssets() == 0
+
+@pytest.mark.unit
+def test_emergencyWithdraw_zero_amount(vault, deployer):
+    with reverts("Amount must be greater than 0"):
+        vault.emergencyWithdraw(0, {"from": deployer})
+
+@pytest.mark.unit
+def test_emergencyWithdraw_insufficient_balance(vault, deployer):
+    with reverts("Insufficient balance"):
+        vault.emergencyWithdraw(100, {"from": deployer})
+
+@pytest.mark.unit
+def test_withdrawAll_no_shares_to_withdraw(vault, user1):
+    with reverts("No shares to withdraw"):
+        vault.withdrawAll({"from": user1})
