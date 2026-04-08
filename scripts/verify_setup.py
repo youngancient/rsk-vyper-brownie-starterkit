@@ -167,7 +167,7 @@ def main():
         print("\n📋 Next Steps:")
         print("   1. Run: ape compile")
         print("   2. Run: ape test")
-        print("   3. Run: ape run scripts/deploy --network rootstock-testnet")
+        print("   3. Run: ape run deploy --network rootstock:testnet")
     else:
         print("\n⚠️  SOME CHECKS FAILED. Please review the errors above.")
         print("\n📋 To fix:")

@@ -8,18 +8,19 @@
 vyper:
   version: "0.4.3"
 
-networks:
-  # Rootstock Testnet
-  rootstock-testnet:
-    host: ${RSK_TESTNET_RPC:-https://public-node.testnet.rsk.co}
-    chainid: 31
-    explorer: https://rootstock-testnet.blockscout.com/api
-    
-  # Rootstock Mainnet
-  rootstock-mainnet:
-    host: ${RSK_MAINNET_RPC:-https://public-node.rsk.co}
-    chainid: 30
-    explorer: https://rootstock.blockscout.com/api
+node:
+  rootstock:
+    testnet:
+      uri: https://public-node.testnet.rsk.co
+    mainnet:
+      uri: https://public-node.rsk.co
+
+etherscan:
+  rootstock:
+    mainnet:
+      uri: https://rootstock.blockscout.com/api
+    testnet:
+      uri: https://rootstock-testnet.blockscout.com/api
 
 # Wallet settings
 wallets:

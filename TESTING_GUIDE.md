@@ -82,8 +82,8 @@ Compiling contracts...
 ### Step 4: Register Networks (First Time Only)
 
 ```bash
-ape networks add Ethereum rootstock-testnet host=https://public-node.testnet.rsk.co chainid=31
-ape networks add Ethereum rootstock-mainnet host=https://public-node.rsk.co chainid=30
+ape networks add Ethereum rootstock:testnet host=https://public-node.testnet.rsk.co chainid=31
+ape networks add Ethereum rootstock:mainnet host=https://public-node.rsk.co chainid=30
 ```
 
 Verify with:
@@ -150,11 +150,11 @@ python scripts/analyze.py
 
 2. **Deploy to testnet:**
    ```bash
-   ape run scripts/deploy --network rootstock-testnet
+   ape run deploy --network rootstock:testnet
    ```
 
 3. **Verify deployment:**
-   - Check `deployments/rootstock-testnet.json` for addresses
+   - Check `deployments/rootstock:testnet.json` for addresses
    - Verify contracts on explorer
 
 **Expected:**
@@ -166,7 +166,7 @@ python scripts/analyze.py
 
 ```bash
 # Run verification script
-ape run scripts/verify --network rootstock-testnet
+ape run verify --network rootstock:testnet
 ```
 
 **Note:** Automatic verification may require manual steps via explorer UI.

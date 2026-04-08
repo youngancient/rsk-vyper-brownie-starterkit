@@ -1,6 +1,6 @@
 """
 Verification script for deployed contracts on Rootstock explorer
-Usage: ape run scripts/verify --network rootstock-testnet
+Usage: ape run verify --network rootstock:testnet
 """
 
 import json
@@ -17,7 +17,7 @@ def load_deployment_info(network_name):
     
     if not deployment_file.exists():
         print(f"❌ Deployment file not found: {deployment_file}")
-        print("   Please deploy contracts first using: ape run scripts/deploy")
+        print("   Please deploy contracts first using: ape run deploy")
         return None
     
     with open(deployment_file, "r") as f:
@@ -28,9 +28,9 @@ def get_explorer_api_url(network_name):
     """
     Get explorer API URL for the network
     """
-    if network_name == "rootstock-testnet":
+    if network_name == "testnet":
         return "https://rootstock-testnet.blockscout.com/api"
-    elif network_name == "rootstock-mainnet":
+    elif network_name == "mainnet":
         return "https://rootstock.blockscout.com/api"
     else:
         return None
@@ -78,9 +78,9 @@ def verify_contract(contract_address, contract_name, network_name):
     # Provide manual verification instructions
     print(f"\n📝 Manual Verification Instructions:")
     print(f"   1. Go to the Rootstock explorer:")
-    if network_name == "rootstock-testnet":
+    if network_name == "testnet":
         print(f"      https://explorer.testnet.rsk.co/address/{contract_address}")
-    elif network_name == "rootstock-mainnet":
+    elif network_name == "mainnet":
         print(f"      https://blockscout.com/rsk/mainnet/address/{contract_address}")
     
     print(f"   2. Click 'Verify and Publish'")

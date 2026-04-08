@@ -4,9 +4,10 @@ build/
 .cache/
 .brownie/
 hardhat.config.js
+.build
 
 reports/
-
+deployments/
 # Python
 __pycache__/
 *.py[cod]

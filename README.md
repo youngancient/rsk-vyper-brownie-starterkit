@@ -30,11 +30,13 @@ The only zero-setup Vyper + Ape environment on Replit. Compile, test, and deploy
 
 1. **Fork this Repl** or create a new one from this template
 2. **Click "Run"** - Ape will automatically compile the contracts
-3. **Set environment variables** (if deploying):
-   - `PRIVATE_KEY` - Your wallet private key
-4. **Deploy**: Click "Deploy" button or run:
+3. **Import your Deployment Account** (if deploying):
    ```bash
-   ape run scripts/deploy --network rootstock-testnet
+   ape accounts import default
+   ```
+4. **Deploy**: Run the CLI native deployer:
+   ```bash
+   ape run deploy --network rootstock:testnet
    ```
 
 ⚠️ **Educational only. Not audited. Do NOT deploy to mainnet without an external audit.**
@@ -43,7 +45,7 @@ The only zero-setup Vyper + Ape environment on Replit. Compile, test, and deploy
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/youngancient/rsk-vyper-brownie-starterkit.git
    cd rsk-vyper-brownie-starterkit
    ```
 
@@ -52,16 +54,20 @@ The only zero-setup Vyper + Ape environment on Replit. Compile, test, and deploy
    pip install -r requirements.txt
    ```
 
-3. **Set up environment variables:**
-   Create a `.env` file in the project root with:
+3. **Set up Node endpoints & Account keystores:**
+   Create a `.env` file in the project root for custom node RPCs (optional):
    ```bash
    # .env file content
-   PRIVATE_KEY=your_private_key_here
-   # WARNING: Public nodes have rate limits! Replace with dedicated RPCs for scale:
-   RSK_TESTNET_RPC=https://public-node.testnet.rsk.co
-   RSK_MAINNET_RPC=https://public-node.rsk.co
+   # WARNING: Public nodes have rate limits! Use dedicated RPCs for production scale.
+   # Ape Framework natively scans for these specialized environment variables to override the config RPCs dynamically!
+   APE_ROOTSTOCK_TESTNET_URI=https://public-node.testnet.rsk.co
+   APE_ROOTSTOCK_MAINNET_URI=https://public-node.rsk.co
    ```
-   **WARNING:** Never commit your `.env` file to version control!
+   
+   **Initialize your Ape Account Keystore with your private key natively:**
+   ```bash
+   ape accounts import default
+   ```
 
 4. **Compile contracts:**
    ```bash
@@ -110,15 +116,25 @@ Networks are configured in `ape-config.yaml`:
 - **Rootstock Testnet**: Chain ID 31
 - **Rootstock Mainnet**: Chain ID 30
 
-### Environment Variables
+### Environment Variables & Accounts
 
-Create a `.env` file following the `.env.example` (or set in Replit Secrets):
+Create a `.env` file to map dedicated Node infrastructures securely (optional):
 
 ```env
-PRIVATE_KEY=your_private_key_here
-# WARNING: Public nodes have rate limits! Replace with dedicated RPCs for scale:
-RSK_TESTNET_RPC=https://public-node.testnet.rsk.co
-RSK_MAINNET_RPC=https://public-node.rsk.co
+# WARNING: Public nodes have rate limits! Replace with dedicated RPCs for production scale:
+# Ape Framework natively scans for these specialized environment variables to override the config RPCs dynamically!
+APE_ROOTSTOCK_TESTNET_URI=https://my-alchemy-testnet...
+APE_ROOTSTOCK_MAINNET_URI=https://my-alchemy-mainnet...
+```
+
+Alternatively, Ape allows you to completely bypass configuration and ad-hoc deploy to ANY custom endpoint natively via the CLI string:
+```bash
+ape run deploy --network https://rpc.my-custom-node.com
+```
+
+**Next, securely bind your account private key natively to Ape:**
+```bash
+ape accounts import default --use-private-key
 ```
 
 ## Contracts
@@ -166,16 +182,26 @@ ape test -m integration
 ### Deploy to Testnet
 
 ```bash
-ape run scripts/deploy --network rootstock-testnet
+ape run deploy --network rootstock:testnet
 ```
 
 ### Deploy to Mainnet
 
 ```bash
-ape run scripts/deploy --network rootstock-mainnet
+ape run deploy --network rootstock:mainnet
 ```
 
-Deployment addresses are actively captured within Ape's ecosystem tracking algorithms.
+### Verify Contracts
+
+To natively verify your deployed smart contracts on the Rootstock Blockscout explorers, run the included verification script:
+
+```bash
+ape run verify --network rootstock:testnet
+```
+
+The script will automatically detect the dynamic addresses securely captured within Ape's ecosystem `deployments/` architecture and evaluate their live validation status! 
+
+*(Note: Currently, the verification script is an instructional assistant that fetches validation status and outputs the direct Blockscout GUI portals to paste your Vyper code manually!)*
 
 ## 📚 Documentation
 
@@ -202,7 +228,7 @@ ape console
 ### Run Scripts
 
 ```bash
-ape run scripts/<script_name> --network <network>
+ape run <script_name> --network <network>
 ```
 
 ## 🌐 Rootstock Networks

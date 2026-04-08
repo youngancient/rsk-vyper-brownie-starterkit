@@ -1,6 +1,6 @@
 """
 Deployment script for ERC20 and Vault contracts
-Usage: ape run scripts/deploy --network rootstock-testnet
+Usage: ape run deploy --network rootstock:testnet
 """
 
 from ape import project, accounts, networks, config, reverts
@@ -17,8 +17,18 @@ def get_account():
         return accounts.test_accounts[0]
     else:
         import os
+        import sys
         alias = os.environ.get("APE_ACCOUNT_ALIAS", "default")
-        return accounts.load(alias)
+        try:
+            return accounts.load(alias)
+        except KeyError:
+            print(f"\n⚠️  No local account keystore found with alias '{alias}'!")
+            print("Unlike Brownie, Ape Framework fundamentally deprecates raw unencrypted .env private keys.")
+            print("To securely deploy to a live network, you must first bind a private key to an encrypted Keystore:")
+            print("\nRun this command in the shell terminal:")
+            print(f"    ape accounts import {alias}")
+            print("\nOnce you've securely minted the keystore password, re-run this deploy script!\n")
+            sys.exit(1)
 
 
 def get_tx_hash(contract):
@@ -146,7 +156,7 @@ def main():
     print("=" * 60)
     print("\n✅ Deployment complete!")
     print("\nNext steps:")
-    print("1. Verify contracts: ape run scripts/verify --network <network>")
+    print("1. Verify contracts: ape run verify --network <network>")
     print("2. Check deployments/<network>.json for addresses")
     print("=" * 60)
 
