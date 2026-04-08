@@ -1,12 +1,12 @@
 """
 Verification script for deployed contracts on Rootstock explorer
-Usage: brownie run scripts/verify --network rootstock-testnet
+Usage: ape run scripts/verify --network rootstock-testnet
 """
 
 import json
 import requests
 from pathlib import Path
-from brownie import network, config
+from ape import project, accounts, networks, config, reverts
 
 
 def load_deployment_info(network_name):
@@ -17,7 +17,7 @@ def load_deployment_info(network_name):
     
     if not deployment_file.exists():
         print(f"❌ Deployment file not found: {deployment_file}")
-        print("   Please deploy contracts first using: brownie run scripts/deploy")
+        print("   Please deploy contracts first using: ape run scripts/deploy")
         return None
     
     with open(deployment_file, "r") as f:
@@ -31,7 +31,7 @@ def get_explorer_api_url(network_name):
     if network_name == "rootstock-testnet":
         return "https://rootstock-testnet.blockscout.com/api"
     elif network_name == "rootstock-mainnet":
-        return "https://blockscout.com/rsk/mainnet/api"
+        return "https://rootstock.blockscout.com/api"
     else:
         return None
 
@@ -86,7 +86,7 @@ def verify_contract(contract_address, contract_name, network_name):
     print(f"   2. Click 'Verify and Publish'")
     print(f"   3. Select:")
     print(f"      - Compiler: Vyper")
-    print(f"      - Version: 0.3.10")
+    print(f"      - Version: 0.4.3")
     print(f"      - Optimization: No")
     print(f"   4. Paste the contract source code from contracts/{contract_name}.vy")
     print(f"   5. Enter constructor arguments (if any)")
@@ -99,7 +99,7 @@ def main():
     """
     Main verification function
     """
-    network_name = network.show_active()
+    network_name = networks.active_provider.network.name
     
     print("\n🔍 Contract Verification")
     print("=" * 60)

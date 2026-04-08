@@ -29,7 +29,7 @@ ls tests/
 ls scripts/
 
 # Check key files
-ls brownie-config.yaml
+ls ape-config.yaml
 ls requirements.txt
 ls README.md
 ```
@@ -37,7 +37,7 @@ ls README.md
 **Expected output:**
 - `contracts/` should contain: `ERC20.vy`, `Vault.vy`
 - `tests/` should contain: `conftest.py`, `test_erc20.py`, `test_vault.py`
-- `scripts/` should contain: `deploy.py`, `verify.py`, `setup_networks.py`, `analyze.py`
+- `scripts/` should contain: `deploy.py`, `verify.py`, `analyze.py`
 
 ### Step 2: Install Dependencies
 
@@ -48,8 +48,8 @@ pip install -r requirements.txt
 
 **Verify installation:**
 ```bash
-# Check Brownie
-brownie --version
+# Check Ape Framework
+ape --version
 
 # Check Vyper
 vyper --version
@@ -64,13 +64,13 @@ pytest --version
 
 ```bash
 # Compile all contracts
-brownie compile
+ape compile
 ```
 
 **Expected output:**
 ```
 Compiling contracts...
-  Vyper version: 0.3.10
+  Vyper version: 0.4.3
   Compiling contracts/ERC20.vy...
   Compiling contracts/Vault.vy...
 ```
@@ -82,20 +82,20 @@ Compiling contracts...
 ### Step 4: Register Networks (First Time Only)
 
 ```bash
-brownie networks add Ethereum rootstock-testnet host=https://public-node.testnet.rsk.co chainid=31
-brownie networks add Ethereum rootstock-mainnet host=https://public-node.rsk.co chainid=30
+ape networks add Ethereum rootstock-testnet host=https://public-node.testnet.rsk.co chainid=31
+ape networks add Ethereum rootstock-mainnet host=https://public-node.rsk.co chainid=30
 ```
 
 Verify with:
 ```bash
-brownie networks list
+ape networks list
 ```
 
 ### Step 5: Run Tests
 
 ```bash
 # Run all tests
-brownie test
+ape test
 ```
 
 **Expected output:**
@@ -117,13 +117,13 @@ tests/test_vault.py::test_vault_deployment PASSED
 **Run specific test files:**
 ```bash
 # Test only ERC20
-brownie test tests/test_erc20.py
+ape test tests/test_erc20.py
 
 # Test only Vault
-brownie test tests/test_vault.py
+ape test tests/test_vault.py
 
 # Run with verbose output
-brownie test -v
+ape test -v
 ```
 
 ### Step 6: Security Analysis
@@ -150,7 +150,7 @@ python scripts/analyze.py
 
 2. **Deploy to testnet:**
    ```bash
-   brownie run scripts/deploy --network rootstock-testnet
+   ape run scripts/deploy --network rootstock-testnet
    ```
 
 3. **Verify deployment:**
@@ -166,7 +166,7 @@ python scripts/analyze.py
 
 ```bash
 # Run verification script
-brownie run scripts/verify --network rootstock-testnet
+ape run scripts/verify --network rootstock-testnet
 ```
 
 **Note:** Automatic verification may require manual steps via explorer UI.
@@ -184,7 +184,7 @@ Use this checklist to verify everything is working:
 ### Dependencies
 - [ ] Python 3.8+ installed
 - [ ] All packages from requirements.txt installed
-- [ ] Brownie installed and working
+- [ ] Ape Framework installed and working
 - [ ] Vyper compiler installed
 - [ ] Pytest installed
 
@@ -215,10 +215,10 @@ Use this checklist to verify everything is working:
 
 ## 🐛 Troubleshooting
 
-### Issue: "Command not found: brownie"
+### Issue: "Command not found: ape"
 **Solution:**
 ```bash
-pip install eth-brownie
+pip install eth-ape
 ```
 
 ### Issue: "Vyper compiler not found"
@@ -229,19 +229,19 @@ pip install vyper
 
 ### Issue: "Compilation errors"
 **Solution:**
-- Check Vyper version: `vyper --version` (should be 0.3.10)
+- Check Vyper version: `vyper --version` (should be 0.4.3)
 - Verify contract syntax
 - Check for typos in contract files
 
 ### Issue: "Test failures"
 **Solution:**
-- Run tests with verbose output: `brownie test -v`
+- Run tests with verbose output: `ape test -v`
 - Check test error messages
 - Verify fixtures in conftest.py
 
 ### Issue: "Network connection errors"
 **Solution:**
-- Check RPC endpoints in brownie-config.yaml
+- Check RPC endpoints in ape-config.yaml
 - Verify network is accessible
 - Try alternative RPC endpoints
 

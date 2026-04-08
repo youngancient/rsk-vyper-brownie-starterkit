@@ -1,4 +1,4 @@
-# @version 0.3.10
+# @version 0.4.3
 """
 Simple Vault Contract with Deposit/Withdraw Functionality
 
@@ -14,7 +14,7 @@ SECURITY FEATURES:
 - Consider implementing the ERC4626 standard.
 """
 
-from vyper.interfaces import ERC20
+from ethereum.ercs import IERC20 as ERC20
 
 # Virtual offset to prevent inflation attacks
 # This creates "dead shares" that make the attack economically infeasible
@@ -55,7 +55,7 @@ owner: public(address)
 shares: public(HashMap[address, uint256])
 
 
-@external
+@deploy
 def __init__(_token: address):
     """
     Initialize the vault with virtual shares to prevent inflation attacks
@@ -111,7 +111,7 @@ def convertToShares(_assets: uint256) -> uint256:
     :return: Equivalent shares
     """
     # Using virtual shares/assets prevents inflation attack
-    return (_assets * self._totalSharesWithVirtual()) / self._totalAssetsWithVirtual()
+    return (_assets * self._totalSharesWithVirtual()) // self._totalAssetsWithVirtual()
 
 
 @view
@@ -125,11 +125,11 @@ def convertToAssets(_shares: uint256) -> uint256:
     :return: Equivalent assets
     """
     # Using virtual shares/assets prevents inflation attack
-    return (_shares * self._totalAssetsWithVirtual()) / self._totalSharesWithVirtual()
+    return (_shares * self._totalAssetsWithVirtual()) // self._totalSharesWithVirtual()
 
 
 @external
-@nonreentrant("lock")
+@nonreentrant
 def deposit(_amount: uint256) -> uint256:
     """
     Deposit tokens into the vault and receive shares
@@ -142,7 +142,7 @@ def deposit(_amount: uint256) -> uint256:
     
     # Calculate shares using virtual offset (prevents inflation attack)
     # Formula: shares = (amount * (totalShares + VIRTUAL_SHARES)) / (totalAssets + VIRTUAL_ASSETS)
-    shares_to_mint: uint256 = (_amount * self._totalSharesWithVirtual()) / self._totalAssetsWithVirtual()
+    shares_to_mint: uint256 = (_amount * self._totalSharesWithVirtual()) // self._totalAssetsWithVirtual()
     
     assert shares_to_mint > 0, "Deposit amount too small"
     
@@ -152,14 +152,14 @@ def deposit(_amount: uint256) -> uint256:
     self.shares[msg.sender] += shares_to_mint
     
     # Transfer tokens from user to vault
-    assert ERC20(self.token).transferFrom(msg.sender, self, _amount), "Transfer failed"
+    assert extcall ERC20(self.token).transferFrom(msg.sender, self, _amount), "Transfer failed"
     
     log Deposit(msg.sender, _amount, shares_to_mint)
     return shares_to_mint
 
 
 @external
-@nonreentrant("lock")
+@nonreentrant
 def withdraw(_shares: uint256) -> uint256:
     """
     Withdraw tokens from the vault by burning shares
@@ -171,7 +171,7 @@ def withdraw(_shares: uint256) -> uint256:
     assert self.shares[msg.sender] >= _shares, "Insufficient shares"
     
     # Calculate assets using virtual offset
-    assets_to_withdraw: uint256 = (_shares * self._totalAssetsWithVirtual()) / self._totalSharesWithVirtual()
+    assets_to_withdraw: uint256 = (_shares * self._totalAssetsWithVirtual()) // self._totalSharesWithVirtual()
     
     assert assets_to_withdraw > 0, "Withdrawal amount too small"
     assert assets_to_withdraw <= self.totalAssets, "Insufficient vault balance"
@@ -182,14 +182,14 @@ def withdraw(_shares: uint256) -> uint256:
     self.totalAssets -= assets_to_withdraw
     
     # Transfer tokens to user
-    assert ERC20(self.token).transfer(msg.sender, assets_to_withdraw), "Transfer failed"
+    assert extcall ERC20(self.token).transfer(msg.sender, assets_to_withdraw), "Transfer failed"
     
     log Withdraw(msg.sender, assets_to_withdraw, _shares)
     return assets_to_withdraw
 
 
 @external
-@nonreentrant("lock")
+@nonreentrant
 def withdrawAll() -> uint256:
     """
     Withdraw all tokens for the caller
@@ -200,7 +200,7 @@ def withdrawAll() -> uint256:
     assert user_shares > 0, "No shares to withdraw"
     
     # Calculate assets using virtual offset
-    assets_to_withdraw: uint256 = (user_shares * self._totalAssetsWithVirtual()) / self._totalSharesWithVirtual()
+    assets_to_withdraw: uint256 = (user_shares * self._totalAssetsWithVirtual()) // self._totalSharesWithVirtual()
     
     assert assets_to_withdraw > 0, "Withdrawal amount too small"
     assert assets_to_withdraw <= self.totalAssets, "Insufficient vault balance"
@@ -211,7 +211,7 @@ def withdrawAll() -> uint256:
     self.totalAssets -= assets_to_withdraw
     
     # Transfer tokens to user
-    assert ERC20(self.token).transfer(msg.sender, assets_to_withdraw), "Transfer failed"
+    assert extcall ERC20(self.token).transfer(msg.sender, assets_to_withdraw), "Transfer failed"
     
     log Withdraw(msg.sender, assets_to_withdraw, user_shares)
     return assets_to_withdraw
@@ -234,37 +234,31 @@ def transferOwnership(_new_owner: address):
 
 
 @external
-@nonreentrant("lock")
+@nonreentrant
 def emergencyWithdraw(_amount: uint256):
     """
-    Emergency withdraw function for owner
-    
-    🚨 DANGER: RUG-PULL VECTOR 🚨
-    The owner can drain deposited funds at any time. While totalAssets is 
-    reduced, totalShares is not adjusted. This means after an emergency withdrawal, 
-    all remaining users' shares point to fewer assets — effectively stealing 
-    value from depositors.
-    
-    For a production environment, this should either:
-    - Include a timelock or multi-sig requirement
-    - Burn proportional owner shares when performing the withdrawal
-    - Be replaced with a contract pause mechanism
+    Emergency withdraw function for owner.
+    Burns proportional owner shares to maintain vault accounting and prevent rug pulls.
     
     :param _amount: Amount of tokens to withdraw
     """
     assert msg.sender == self.owner, "Only owner"
     assert _amount > 0, "Amount must be greater than 0"
     
-    vault_balance: uint256 = ERC20(self.token).balanceOf(self)
+    # Calculate shares using virtual offset
+    shares_to_burn: uint256 = (_amount * self._totalSharesWithVirtual()) // self._totalAssetsWithVirtual()
+    
+    assert shares_to_burn > 0, "Withdrawal amount too small"
+    assert self.shares[msg.sender] >= shares_to_burn, "Insufficient owner shares"
+    
+    vault_balance: uint256 = staticcall ERC20(self.token).balanceOf(self)
     assert vault_balance >= _amount, "Insufficient balance"
     
-    # Only reduce totalAssets if there are actual assets tracked
-    if _amount <= self.totalAssets:
-        self.totalAssets -= _amount
-    else:
-        # If withdrawing more than tracked (e.g., donations), set to 0
-        self.totalAssets = 0
+    # Update vault accounting
+    self.shares[msg.sender] -= shares_to_burn
+    self.totalShares -= shares_to_burn
+    self.totalAssets -= _amount
     
-    assert ERC20(self.token).transfer(self.owner, _amount), "Transfer failed"
+    assert extcall ERC20(self.token).transfer(self.owner, _amount), "Transfer failed"
     
     log EmergencyWithdraw(self.owner, _amount)

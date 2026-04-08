@@ -117,13 +117,12 @@ def main():
     print("-" * 70)
     results.append(check_file_exists("scripts/deploy.py", "Deploy script"))
     results.append(check_file_exists("scripts/verify.py", "Verify script"))
-    results.append(check_file_exists("scripts/setup_networks.py", "Setup networks script"))
     results.append(check_file_exists("scripts/analyze.py", "Analyze script"))
     
     # Check configuration files
     print("\n⚙️  Checking Configuration Files...")
     print("-" * 70)
-    results.append(check_file_exists("brownie-config.yaml", "Brownie config"))
+    results.append(check_file_exists("ape-config.yaml", "Ape config"))
     results.append(check_file_exists("requirements.txt", "Requirements file"))
     results.append(check_file_exists("pytest.ini", "Pytest config"))
     results.append(check_file_exists("replit.nix", "Replit Nix config"))
@@ -140,13 +139,13 @@ def main():
     # Check tools
     print("\n🛠️  Checking Installed Tools...")
     print("-" * 70)
-    results.append(check_command("python", "Python"))
+    results.append(check_command(sys.executable, "Python"))
     results.append(check_command("pip", "pip"))
     
     # Check Python packages
     print("\n📦 Checking Python Packages...")
     print("-" * 70)
-    results.append(check_python_package("brownie", "Brownie framework"))
+    results.append(check_python_package("eth-ape", "Ape framework"))
     results.append(check_python_package("vyper", "Vyper compiler"))
     results.append(check_python_package("pytest", "Pytest"))
     results.append(check_python_package("slither-analyzer", "Slither"))
@@ -166,9 +165,9 @@ def main():
     if passed == total:
         print("\n🎉 ALL CHECKS PASSED! Project setup is complete.")
         print("\n📋 Next Steps:")
-        print("   1. Run: brownie compile")
-        print("   2. Run: brownie test")
-        print("   3. Run: brownie run scripts/deploy --network rootstock-testnet")
+        print("   1. Run: ape compile")
+        print("   2. Run: ape test")
+        print("   3. Run: ape run scripts/deploy --network rootstock-testnet")
     else:
         print("\n⚠️  SOME CHECKS FAILED. Please review the errors above.")
         print("\n📋 To fix:")

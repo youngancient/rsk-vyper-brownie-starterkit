@@ -1,15 +1,12 @@
-# Brownie Configuration for Rootstock Networks
-# https://www.brownie-console.com/
-dotenv: .env
+# Ape Configuration for Rootstock Networks
+# WARNING: Public nodes (public-node.rsk.co) are strictly recommended for light 
+# development only and enforce severe rate limits (e.g., 60 requests/minute).
+# For production scale, replace with dedicated Infura / Alchemy / Quicknode endpoints.
 
-dependencies:
-  # Add any dependencies here if needed
   # - OpenZeppelin/openzeppelin-contracts@4.0.0
 
-compiler:
-  vyper:
-    version: "0.3.10"
-    evm_version: "london"
+vyper:
+  version: "0.4.3"
 
 networks:
   # Rootstock Testnet

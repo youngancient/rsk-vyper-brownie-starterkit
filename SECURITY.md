@@ -27,7 +27,7 @@ slither . --vyper --json slither-report.json
 
 ### Vyper Compiler Strict Checks
 
-Vyper 0.3.10 has built-in strict checks that help prevent common vulnerabilities:
+Vyper 0.4.3 has built-in strict checks that help prevent common vulnerabilities:
 
 ```bash
 # Compile with all warnings
@@ -66,7 +66,7 @@ vyper contracts/ERC20.vy --show-gas-estimates
 ### ⚠️ Considerations for Production
 
 1. **Re-entrancy**: While Vyper helps, consider adding explicit re-entrancy guards for complex contracts
-2. **Integer Overflow/Underflow**: Vyper 0.3.10 handles this automatically, but always verify
+2. **Integer Overflow/Underflow**: Vyper 0.4.3 handles this automatically, but always verify
 3. **Access Control**: Current implementation uses simple owner pattern; consider multi-sig for production
 4. **Emergency Functions**: Vault has emergency withdraw; ensure proper access control
 5. **Share Calculation**: Vault uses simple proportional shares; verify rounding behavior

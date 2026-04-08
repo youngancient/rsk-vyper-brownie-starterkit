@@ -2,7 +2,7 @@ modules = ["python-3.10", "nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["solc"]
+packages = []
 
 [workflows]
 runButton = "Project"
@@ -34,7 +34,7 @@ export PATH="$PWD/.pythonlibs/bin:$PWD/node_modules/.bin:$PATH"
 export PYTHONPATH="$PWD/.pythonlibs/lib/python3.10/site-packages"
 
 echo "🧪 Running Smart Contract Tests..."
-brownie test
+ape test
 '"""
 
 [workflows.workflow.metadata]

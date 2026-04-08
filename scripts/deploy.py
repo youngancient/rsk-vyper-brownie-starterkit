@@ -1,10 +1,11 @@
 """
 Deployment script for ERC20 and Vault contracts
-Usage: brownie run scripts/deploy --network rootstock-testnet
+Usage: ape run scripts/deploy --network rootstock-testnet
 """
 
-from brownie import ERC20, Vault, accounts, network, config
+from ape import project, accounts, networks, config, reverts
 import json
+import click
 from pathlib import Path
 
 
@@ -12,23 +13,24 @@ def get_account():
     """
     Get account from private key or use local account
     """
-    if network.show_active() == "development":
-        return accounts[0]
+    if networks.active_provider.network.name in ["development", "local", "hardhat"]:
+        return accounts.test_accounts[0]
     else:
-        return accounts.add(config["wallets"]["from_key"])
+        import os
+        alias = os.environ.get("APE_ACCOUNT_ALIAS", "default")
+        return accounts.load(alias)
 
-def get_tx_params(account):
-    """
-    Generate transaction parameters, forcing legacy gas for Rootstock
-    """
-    params = {"from": account}
-    # RSK requires legacy Type 0 transactions. 0.06 gwei is a safe default.
-    if "rootstock" in network.show_active():
-        params["gas_price"] = "0.065 gwei" 
-        params["required_confs"] = 1  # Wait for 1 RSK block confirmation (~30 secs)
-    return params
 
-def save_deployment_info(contract_name, contract_address, network_name):
+def get_tx_hash(contract):
+    if hasattr(contract, 'txn_hash') and contract.txn_hash:
+        return contract.txn_hash
+    if hasattr(contract, 'receipt') and hasattr(contract.receipt, 'txn_hash') and contract.receipt.txn_hash:
+        return contract.receipt.txn_hash
+    if hasattr(contract, 'tx') and hasattr(contract.tx, 'txid') and contract.tx.txid:
+        return contract.tx.txid
+    return "N/A"
+
+def save_deployment_info(contract_name, contract_address, network_name, tx_hash=None):
     """
     Save deployment information to file
     """
@@ -46,7 +48,7 @@ def save_deployment_info(contract_name, contract_address, network_name):
     deployments[contract_name] = {
         "address": contract_address,
         "network": network_name,
-        "tx_hash": None  # Can be added if needed
+        "tx_hash": tx_hash
     }
     
     with open(deployment_file, "w") as f:
@@ -55,7 +57,7 @@ def save_deployment_info(contract_name, contract_address, network_name):
     print(f"✅ Deployment info saved to {deployment_file}")
 
 
-def deploy_erc20():
+def deploy_erc20(account):
     """
     Deploy ERC20 token contract
     """
@@ -63,8 +65,6 @@ def deploy_erc20():
     print("Deploying ERC20 Token...")
     print("=" * 60)
     
-    account = get_account()
-    tx_params = get_tx_params(account)
     # Token parameters
     name = "Rootstock Starter Token"
     symbol = "RST"
@@ -76,27 +76,21 @@ def deploy_erc20():
     print(f"Decimals: {decimals}")
     print(f"Initial Supply: {initial_supply / 10**decimals:,.0f} {symbol}")
     print(f"Deploying from: {account.address}")
-    print(f"Network: {network.show_active()}")
+    print(f"Network: {networks.active_provider.network.name}")
     
     # Deploy
-    token = ERC20.deploy(
-        name,
-        symbol,
-        decimals,
-        initial_supply,
-        tx_params
-    )
+    token = account.deploy(project.ERC20, name, symbol, decimals, initial_supply)
     
     print(f"\n✅ ERC20 Token deployed at: {token.address}")
-    print(f"Transaction: {token.tx.txid if hasattr(token.tx, 'txid') else 'N/A'}")
+    print(f"Transaction: {get_tx_hash(token)}")
     
     # Save deployment info
-    save_deployment_info("ERC20", token.address, network.show_active())
+    save_deployment_info("ERC20", token.address, networks.active_provider.network.name, get_tx_hash(token))
     
     return token
 
 
-def deploy_vault(token_address):
+def deploy_vault(account, token_address):
     """
     Deploy Vault contract
     """
@@ -104,24 +98,19 @@ def deploy_vault(token_address):
     print("Deploying Vault...")
     print("=" * 60)
     
-    account = get_account()
-    tx_params = get_tx_params(account)
 
     print(f"Token Address: {token_address}")
     print(f"Deploying from: {account.address}")
-    print(f"Network: {network.show_active()}")
+    print(f"Network: {networks.active_provider.network.name}")
     
     # Deploy
-    vault = Vault.deploy(
-        token_address,
-        tx_params
-    )
+    vault = account.deploy(project.Vault, token_address)
     
     print(f"\n✅ Vault deployed at: {vault.address}")
-    print(f"Transaction: {vault.tx.txid if hasattr(vault.tx, 'txid') else 'N/A'}")
+    print(f"Transaction: {get_tx_hash(vault)}")
     
     # Save deployment info
-    save_deployment_info("Vault", vault.address, network.show_active())
+    save_deployment_info("Vault", vault.address, networks.active_provider.network.name, get_tx_hash(vault))
     
     return vault
 
@@ -131,26 +120,33 @@ def main():
     Main deployment function
     """
     print("\n🚀 Starting Deployment Process")
-    print(f"Network: {network.show_active()}")
+    print(f"Network: {networks.active_provider.network.name}")
     print("=" * 60)
     
+    if "mainnet" in networks.active_provider.network.name.lower():
+        if not click.confirm("⚠️  DANGER: You are deploying to MAINNET! Are you sure you want to proceed?"):
+            print("Deployment cancelled.")
+            return
+    
+    
+    account = get_account()
     # Deploy ERC20
-    token = deploy_erc20()
+    token = deploy_erc20(account)
     
     # Deploy Vault
-    vault = deploy_vault(token.address)
+    vault = deploy_vault(account, token.address)
     
     # Summary
     print("\n" + "=" * 60)
     print("📋 Deployment Summary")
     print("=" * 60)
-    print(f"Network: {network.show_active()}")
+    print(f"Network: {networks.active_provider.network.name}")
     print(f"ERC20 Token: {token.address}")
     print(f"Vault: {vault.address}")
     print("=" * 60)
     print("\n✅ Deployment complete!")
     print("\nNext steps:")
-    print("1. Verify contracts: brownie run scripts/verify --network <network>")
+    print("1. Verify contracts: ape run scripts/verify --network <network>")
     print("2. Check deployments/<network>.json for addresses")
     print("=" * 60)
 

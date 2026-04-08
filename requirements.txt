@@ -1,12 +1,5 @@
-# 🚨 WARNING: eth-brownie is deprecated and no longer actively maintained.
-# The Brownie team recommends migrating to Ape Framework or Foundry.
-# Pinning to 1.20.0 retains unpatched vulnerabilities and limits compatibility.
-eth-brownie==1.20.0
-
-vyper==0.3.10
-
+eth-ape
+ape-vyper
+vyper==0.4.3
 pytest-cov==4.1.0
-
-slither-analyzer==0.9.6
-
-python-dotenv==0.16.0
+python-dotenv==1.1.0

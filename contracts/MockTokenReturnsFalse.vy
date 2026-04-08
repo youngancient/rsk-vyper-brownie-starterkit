@@ -1,16 +1,18 @@
-# @version 0.3.10
+# @version 0.4.3
 """
 Mock ERC20 token that returns False instead of reverting on failure.
 This token is used to test the vault contract's ability to handle
 non-standard ERC20 tokens.
 """
 
+owner: public(address)
 balances: public(HashMap[address, uint256])
 allowances: public(HashMap[address, HashMap[address, uint256]])
 force_fail: public(bool)
 
-@external
+@deploy
 def __init__():
+    self.owner = msg.sender
     self.balances[msg.sender] = 1000 * 10**18
     self.force_fail = False
 
@@ -21,6 +23,7 @@ def balanceOf(account: address) -> uint256:
 
 @external
 def set_force_fail(fail: bool):
+    assert msg.sender == self.owner, "Only owner"
     self.force_fail = fail
 
 @external
@@ -51,4 +54,5 @@ def approve(spender: address, amount: uint256) -> bool:
 
 @external
 def drain(target: address):
+    assert msg.sender == self.owner, "Only owner"
     self.balances[target] = 0

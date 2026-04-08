@@ -1,4 +1,4 @@
-# @version 0.3.10
+# @version 0.4.3
 """
 Standard ERC20 Token Implementation with Security Enhancements
 
@@ -10,7 +10,7 @@ SECURITY FEATURES:
 Based on EIP-20 Token Standard
 """
 
-from vyper.interfaces import ERC20
+from ethereum.ercs import IERC20 as ERC20
 
 implements: ERC20
 
@@ -32,7 +32,7 @@ balanceOf: public(HashMap[address, uint256])
 allowance: public(HashMap[address, HashMap[address, uint256]])
 
 
-@external
+@deploy
 def __init__(_name: String[64], _symbol: String[32], _decimals: uint8, _initial_supply: uint256):
     """
     Initialize the ERC20 token
@@ -62,7 +62,6 @@ def transfer(_to: address, _value: uint256) -> bool:
     """
     # SECURITY: Prevent burning tokens by sending to zero address
     assert _to != empty(address), "Cannot transfer to zero address"
-    assert _to != msg.sender, "Cannot transfer to self"
     assert _value > 0, "Amount must be greater than 0"
     assert self.balanceOf[msg.sender] >= _value, "Insufficient balance"
     
@@ -85,7 +84,6 @@ def transferFrom(_from: address, _to: address, _value: uint256) -> bool:
     """
     # SECURITY: Prevent burning tokens by sending to zero address
     assert _to != empty(address), "Cannot transfer to zero address"
-    assert _to != _from, "Cannot transfer to self"
     assert _value > 0, "Amount must be greater than 0"
     assert self.allowance[_from][msg.sender] >= _value, "Insufficient allowance"
     assert self.balanceOf[_from] >= _value, "Insufficient balance"

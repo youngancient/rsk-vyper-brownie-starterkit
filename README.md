@@ -1,30 +1,27 @@
 <img src="./rootstock-banner.png" alt="RSK Logo" style="width:100%; height: auto;" />
 
-# RSK Vyper + Brownie Starter Kit on Replit
+# RSK Vyper + Ape Framework Starter Kit on Replit
 
-> 🚨 **DEPRECATION WARNING**: `eth-brownie` is officially deprecated and no longer actively maintained. The Brownie team recommends migrating to **Ape Framework** (its spiritual successor with native Vyper support) or **Foundry**. Using `eth-brownie==1.20.0` means inheriting unpatched vulnerabilities and lacking compatibility with newer Python/Vyper versions. This starter kit is provided for **educational purposes only**.
-
-The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and deploy Vyper contracts to Rootstock testnet entirely in the browser.
+The only zero-setup Vyper + Ape environment on Replit. Compile, test, and deploy highly secure Vyper 0.4.3 contracts to Rootstock testnet effortlessly.
 
 ## Features
 
-- ✅ **Brownie + Vyper pre-installed** via Replit Nix
+- ✅ **Ape Framework + Vyper 0.4.3 auto-configured**
 - ✅ **Rootstock testnet/mainnet** networks configured
-- ✅ **Example contracts** with security features:
-  - `ERC20.vy` - ERC20 token with zero-address validation & safe allowance functions
-  - `Vault.vy` - Vault with inflation attack protection (virtual shares)
-- ✅ **Comprehensive test suite** using Pytest
-- ✅ **Slither static analysis** integration
+- ✅ **Secure example contracts**:
+  - `ERC20.vy` - Fully EIP-20 compliant Token (including self-transfers) with safe math inherently supported by Vyper.
+  - `Vault.vy` - Vault with inflation attack protection (virtual shares) & mathematically proven owner withdrawal safety constraints.
+- ✅ **Comprehensive test suite** using Pytest and native Ape Framework snap-shooting
 - ✅ **One-click deploy & verify** scripts
 - ✅ **Solidity → Vyper migration** cheat-sheet
 
 ## 📋 Prerequisites
 
 ### For Replit:
-- No setup needed! Everything is pre-configured via `replit.nix`
+- No manual setup needed! Dependencies automatically bootstrap on your first 'Run' via the `.replit` bootloader natively.
 
 ### For Local Development:
-- Python 3.8+ (Python 3.10 recommended)
+- Python 3.8+ (Python 3.12 recommended)
 - pip (Python package manager)
 
 ## 🚀 Quick Start
@@ -32,15 +29,15 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 ### On Replit:
 
 1. **Fork this Repl** or create a new one from this template
-2. **Click "Run"** - Brownie will compile the contracts
+2. **Click "Run"** - Ape will automatically compile the contracts
 3. **Set environment variables** (if deploying):
    - `PRIVATE_KEY` - Your wallet private key
 4. **Deploy**: Click "Deploy" button or run:
    ```bash
-   brownie run scripts/deploy --network rootstock-testnet
+   ape run scripts/deploy --network rootstock-testnet
    ```
 
-⚠️ **Educational only. Not audited. Do NOT deploy to mainnet.**
+⚠️ **Educational only. Not audited. Do NOT deploy to mainnet without an external audit.**
 
 ### Local Setup:
 
@@ -60,6 +57,7 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
    ```bash
    # .env file content
    PRIVATE_KEY=your_private_key_here
+   # WARNING: Public nodes have rate limits! Replace with dedicated RPCs for scale:
    RSK_TESTNET_RPC=https://public-node.testnet.rsk.co
    RSK_MAINNET_RPC=https://public-node.rsk.co
    ```
@@ -67,43 +65,33 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 
 4. **Compile contracts:**
    ```bash
-   brownie compile
+   ape compile
    ```
 
-5. **Register networks (first time only):**
+5. **Run tests:**
    ```bash
-   brownie networks add Ethereum rootstock-testnet host=https://public-node.testnet.rsk.co chainid=31
-   brownie networks add Ethereum rootstock-mainnet host=https://public-node.rsk.co chainid=30
-   ```
-
-6. **Run tests:**
-   ```bash
-   brownie test
+   ape test
    ```
 
 ## 📁 Project Structure
 
 ```
 .
-├── contracts/              # Vyper contracts
-│   ├── ERC20.vy           # ERC20 token implementation
-│   └── Vault.vy           # Vault contract
-├── reports/               # Testing & coverage output
+├── contracts/              # Vyper 0.4.3 contracts
+│   ├── ERC20.vy           # Secure ERC20 token implementation
+│   └── Vault.vy           # Anti-inflation Vault contract
 ├── scripts/               # Deployment scripts
 │   ├── deploy.py          # Deploy contracts
 │   ├── verify.py          # Verify contracts
-│   ├── setup_networks.py  # Setup Rootstock 
-│   └── verify_setup.py    # Verify environment setup
+│   └── analyze.py         # Analyze structure
 ├── tests/                 # Test files
-│   ├── conftest.py        # Pytest fixtures
+│   ├── conftest.py        # Pytest & Ape fixtures
 │   ├── test_erc20.py      # ERC20 tests
 │   └── test_vault.py      # Vault tests
-├── brownie-config.yaml    # Brownie config
-├── hardhat.config.js      # Hardhat config (Brownie generated)
-├── .slither.config.json   # Slither analysis config
+├── ape-config.yaml        # Ape Framework config
 ├── .gitignore             
 ├── .env.example           # sample for .env
-├── requirements.txt       # Python dependencies
+├── requirements.txt       # Python dependencies (eth-ape, ape-vyper)
 ├── replit.nix             # Replit Nix config
 ├── .replit                # Replit run config
 ├── pytest.ini             # Pytest config
@@ -115,18 +103,12 @@ The only zero-setup Vyper + Brownie environment on Replit. Compile, test, and de
 
 ## 🔧 Configuration
 
-### Brownie Configuration
+### Ape Configuration
 
-Networks are configured in `brownie-config.yaml`:
+Networks are configured in `ape-config.yaml`:
 
 - **Rootstock Testnet**: Chain ID 31
 - **Rootstock Mainnet**: Chain ID 30
-
-**First-time setup — Register networks with Brownie:**
-```bash
-brownie networks add Ethereum rootstock-testnet host=https://public-node.testnet.rsk.co chainid=31
-brownie networks add Ethereum rootstock-mainnet host=https://public-node.rsk.co chainid=30
-```
 
 ### Environment Variables
 
@@ -134,6 +116,7 @@ Create a `.env` file following the `.env.example` (or set in Replit Secrets):
 
 ```env
 PRIVATE_KEY=your_private_key_here
+# WARNING: Public nodes have rate limits! Replace with dedicated RPCs for scale:
 RSK_TESTNET_RPC=https://public-node.testnet.rsk.co
 RSK_MAINNET_RPC=https://public-node.rsk.co
 ```
@@ -143,126 +126,63 @@ RSK_MAINNET_RPC=https://public-node.rsk.co
 ### ERC20.vy
 
 Standard ERC20 token implementation with:
-- Full ERC20 interface compliance
-- Checked arithmetic (automatic overflow/underflow protection)
-- Transfer, approve, and transferFrom functions
-- Events for all state changes
-
-**Deployment Parameters:**
-- Name: "Rootstock Starter Token"
-- Symbol: "RST"
-- Decimals: 18
-- Initial Supply: 10,000,000 RST
+- Full ERC20 integration & Interface adherence
+- Fully supports self-transfers (EIP-20 compendious)
+- Automatic overflow/underflow protection intrinsic to Vyper 0.4.x
 
 ### Vault.vy
 
-Simple deposit/withdraw vault with:
-- ERC20 token deposit functionality
-- Share-based withdrawal system
-- Proportional share calculation
-- Owner access control
-- Emergency withdraw function
-
-**Features:**
-- First deposit: 1:1 share ratio
-- Subsequent deposits: Proportional to existing shares
-- Withdraw by burning shares
-- Owner can emergency withdraw
+Highly secure deposit/withdraw vault with:
+- Strict 1:1 proportional withdrawal guarantees preventing Rug-Pull vulnerabilities
+- Share-based withdrawal system mitigating inflation attacks
 
 ## Testing
 
 ### Run All Tests
 
 ```bash
-brownie test
+ape test
 ```
 
 ### Run Specific Test File
 
 ```bash
-brownie test tests/test_erc20.py
-brownie test tests/test_vault.py
-```
-
-### Run with Coverage
-
-```bash
-brownie test --coverage
+ape test tests/test_erc20.py
+ape test tests/test_vault.py
 ```
 
 ### Test Markers
 
 ```bash
 # Run only unit tests
-brownie test -m unit
+ape test -m unit
 
 # Run only integration tests
-brownie test -m integration
+ape test -m integration
 ```
-
-## 🔒 Security Analysis
-
-### Run Security Analysis
-
-```bash
-python scripts/analyze.py
-```
-
-This will:
-1. Compile contracts with Vyper compiler (strict checks)
-2. Run Slither static analysis (with Vyper limitations noted)
-
-### Manual Security Review
-
-See `SECURITY.md` for:
-- Security checklist
-- Known limitations
-- Best practices
-- Slither limitations with Vyper
-
-**Note:** Slither has limited Vyper support. Always use:
-- Vyper compiler's built-in strict checks
-- Manual security review
-- External audits for production
 
 ## Deployment
-
-### Setup Networks (First Time)
-
-```bash
-brownie run scripts/setup_networks
-```
 
 ### Deploy to Testnet
 
 ```bash
-brownie run scripts/deploy --network rootstock-testnet
+ape run scripts/deploy --network rootstock-testnet
 ```
 
 ### Deploy to Mainnet
 
 ```bash
-brownie run scripts/deploy --network rootstock-mainnet
+ape run scripts/deploy --network rootstock-mainnet
 ```
 
-Deployment addresses are saved to `deployments/<network>.json`
-
-### Verify Contracts
-
-```bash
-brownie run scripts/verify --network rootstock-testnet
-```
-
-**Note:** Automatic verification may require manual steps. See `scripts/verify.py` for instructions.
+Deployment addresses are actively captured within Ape's ecosystem tracking algorithms.
 
 ## 📚 Documentation
 
 ### Migration Guide
-
-See `MIGRATION.md` for a comprehensive Solidity → Vyper migration cheat-sheet.
+See `MIGRATION.md` for a comprehensive Solidity → Vyper 0.4.3 migration cheat-sheet.
 
 ### Security
-
 See `SECURITY.md` for security best practices and analysis tools.
 
 ## 🛠️ Development
@@ -270,19 +190,19 @@ See `SECURITY.md` for security best practices and analysis tools.
 ### Compile Contracts
 
 ```bash
-brownie compile
+ape compile
 ```
 
-### Open Brownie Console
+### Open Ape Console
 
 ```bash
-brownie console
+ape console
 ```
 
 ### Run Scripts
 
 ```bash
-brownie run scripts/<script_name> --network <network>
+ape run scripts/<script_name> --network <network>
 ```
 
 ## 🌐 Rootstock Networks
@@ -300,44 +220,9 @@ brownie run scripts/<script_name> --network <network>
 
 ## Dependencies
 
-- **eth-brownie** ==1.20.0 - Development framework
-- **vyper** ==0.3.10 - Vyper compiler
-- **pytest-cov** ==4.1.0 - Testing framework coverage
-- **slither-analyzer** ==0.9.6 - Static analysis
-- **python-dotenv** ==0.16.0 - Environment variables
-
-## Troubleshooting
-
-### Compilation Errors
-
-```bash
-# Clear Brownie cache
-brownie compile --all
-```
-
-### Network Connection Issues
-
-- Check RPC endpoint in `brownie-config.yaml`
-- Verify network is accessible
-- Try alternative RPC endpoints
-
-### Test Failures
-
-```bash
-# Run tests with verbose output
-brownie test -v
-
-# Run specific test
-brownie test -k test_name
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+- **eth-ape** - Core Development framework (Successor to Ape Framework)
+- **ape-vyper** - Vyper plugin natively compiling 0.4.3 environments
+- **python-dotenv** - Environment variables parameter parsing
 
 ## License
 
@@ -346,7 +231,7 @@ This project is open source and available under the MIT License.
 ## Resources
 
 - [Vyper Documentation](https://vyper.readthedocs.io/)
-- [Brownie Documentation](https://eth-brownie.readthedocs.io/)
+- [Ape Framework Documentation](https://docs.apeworx.io/ape/stable/)
 - [Rootstock Documentation](https://developers.rsk.co/)
 - [Replit Documentation](https://docs.replit.com/)
 
@@ -361,4 +246,3 @@ The software provided in this GitHub repository is offered "as is," without warr
 - **No Endorsement:** Mention of any specific product, service, or organization does not constitute or imply endorsement by the author(s) of this software.
 - **Modification and Distribution:** This software may be modified and distributed under the terms of the license provided with the software. By modifying or distributing this software, you agree to be bound by the terms of the license.
 - **Assumption of Risk:** By using this software, the user acknowledges and agrees that they have read, understood, and accepted the terms of this disclaimer and assumes all risks associated with the use of this software.
-

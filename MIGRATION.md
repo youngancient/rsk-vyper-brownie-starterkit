@@ -29,7 +29,7 @@ contract MyContract {
 
 **Vyper:**
 ```vyper
-# @version 0.3.10
+# @version 0.4.3
 
 @external
 def __init__():
@@ -45,7 +45,7 @@ pragma solidity ^0.8.0;
 
 **Vyper:**
 ```vyper
-# @version 0.3.10
+# @version 0.4.3
 ```
 
 ---
@@ -484,7 +484,7 @@ Strings must have a fixed maximum length: `String[64]`.
 
 | Feature | Solidity | Vyper |
 |---------|----------|-------|
-| Version | `pragma solidity ^0.8.0;` | `# @version 0.3.10` |
+| Version | `pragma solidity ^0.8.0;` | `# @version 0.4.3` |
 | Public var | `uint256 public x;` | `x: public(uint256)` |
 | Function | `function f() public {}` | `@external\ndef f():` |
 | View | `function f() public view {}` | `@view\n@external\ndef f():` |
