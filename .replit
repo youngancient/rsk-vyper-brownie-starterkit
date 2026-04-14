@@ -19,7 +19,7 @@ echo "🚀 Booting up Rootstock Starter Kit..."
 
 if [ ! -f .env ]; then 
     echo "Creating default .env file..."
-    echo "PRIVATE_KEY=0x$(python -c 'import secrets; print(secrets.token_hex(32))')" > .env
+    echo "PRIVATE_KEY=0x$(python3 -c 'import secrets; print(secrets.token_hex(32))')" > .env
 fi
 
 echo "📦 Installing dependencies (this takes a minute on first run)..."

@@ -7,7 +7,7 @@ This guide will help you verify that the project is set up correctly and all com
 Run the verification script to check everything at once:
 
 ```bash
-python scripts/verify_setup.py
+python3 scripts/verify_setup.py
 ```
 
 This will check:
@@ -130,7 +130,7 @@ ape test -v
 
 ```bash
 # Run security analysis
-python scripts/analyze.py
+python3 scripts/analyze.py
 ```
 
 **Expected output:**

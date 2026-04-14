@@ -79,9 +79,9 @@ def verify_contract(contract_address, contract_name, network_name):
     print(f"\n📝 Manual Verification Instructions:")
     print(f"   1. Go to the Rootstock explorer:")
     if network_name == "testnet":
-        print(f"      https://explorer.testnet.rsk.co/address/{contract_address}")
+        print(f"      https://rootstock-testnet.blockscout.com/address/{contract_address}")
     elif network_name == "mainnet":
-        print(f"      https://blockscout.com/rsk/mainnet/address/{contract_address}")
+        print(f"      https://rootstock.blockscout.com/address/{contract_address}")
     
     print(f"   2. Click 'Verify and Publish'")
     print(f"   3. Select:")

@@ -1,5 +1,6 @@
-eth-ape
-ape-vyper
+eth-ape==0.8.48
+ape-vyper==0.8.10
 vyper==0.4.3
 pytest-cov==4.1.0
 python-dotenv==1.1.0
+slither-analyzer==0.9.6

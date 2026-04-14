@@ -1,16 +1,14 @@
 """
-Pytest configuration and fixtures for Brownie tests
+Pytest configuration and fixtures for Ape tests
 
 FIXED: User fixtures now point to different accounts for proper multi-user testing
 """
 
 import pytest
+import ape
 from ape import project, accounts, networks, config, reverts
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_accounts():
-    pass
 
 
 
@@ -46,6 +44,15 @@ def user3():
     Third test user account (account 3)
     """
     return accounts.test_accounts[3]
+
+
+@pytest.fixture(scope="session")
+def mock_token_returns_false_contract_type():
+    """
+    Compile MockTokenReturnsFalse dynamically once per session to avoid repeated I/O and compilation.
+    """
+    with open("tests/MockTokenReturnsFalse.vy", "r") as f:
+        return ape.compilers.compile_source("vyper", f.read(), contractName="MockTokenReturnsFalse")
 
 
 @pytest.fixture(scope="function")

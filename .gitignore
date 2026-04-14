@@ -1,10 +1,6 @@
-# Brownie
+# Ape
+.build/
 build/
-.reports/
-.cache/
-.brownie/
-hardhat.config.js
-.build
 
 reports/
 deployments/

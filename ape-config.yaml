@@ -22,23 +22,14 @@ etherscan:
     testnet:
       uri: https://rootstock-testnet.blockscout.com/api
 
-# Wallet settings
-wallets:
-  from_key: ${PRIVATE_KEY}
-
 # Gas settings
 gas_limit: auto
 gas_price: auto
 
 # Project settings
 project_structure:
-  contracts: contracts
+  contracts: [contracts, tests]
   tests: tests
   scripts: scripts
 
-# Report settings
-report:
-  exclude_contracts:
-    - SafeMath
-    - TestContract
 

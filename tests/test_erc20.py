@@ -262,10 +262,21 @@ def test_decrease_allowance_zero_address(token, deployer):
 @pytest.mark.unit
 def test_transfer_zero_amount(token, deployer, user1):
     """
-    Test transfer with zero amount
+    Test transfer with zero amount succeeds (EIP-20 compliance)
     """
-    with reverts("Amount must be greater than 0"):
-        token.transfer(user1, 0, sender=deployer)
+    initial_balance_deployer = token.balanceOf(deployer)
+    initial_balance_user1 = token.balanceOf(user1)
+    
+    tx = token.transfer(user1, 0, sender=deployer)
+    
+    assert token.balanceOf(deployer) == initial_balance_deployer
+    assert token.balanceOf(user1) == initial_balance_user1
+    
+    # Check event
+    assert get_event(tx, "Transfer") is not None
+    assert getattr(get_event(tx, "Transfer"), "sender") == deployer
+    assert getattr(get_event(tx, "Transfer"), "receiver") == user1
+    assert getattr(get_event(tx, "Transfer"), "value") == 0
 
 
 @pytest.mark.unit

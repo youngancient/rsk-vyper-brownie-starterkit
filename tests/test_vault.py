@@ -253,7 +253,6 @@ def test_ownership_transfer_invalid_address(vault, deployer):
     """
     Test ownership transfer to zero address
     """
-    import ape
     with reverts("Invalid address"):
         vault.transferOwnership("0x0000000000000000000000000000000000000000", sender=deployer)
 
@@ -436,13 +435,11 @@ def test_withdraw_after_emergencyWithdraw(vault, token, deployer, approved_vault
 
 
 @pytest.mark.unit
-def test_non_standard_erc20_returns_false(deployer, user1):
+def test_non_standard_erc20_returns_false(deployer, user1, mock_token_returns_false_contract_type):
     """
     Test vault interaction with an ERC20 that returns False on failure
     """
-    import ape
-    # Assuming MockTokenReturnsFalse is compiled
-    token = project.MockTokenReturnsFalse.deploy(sender=deployer)
+    token = deployer.deploy(mock_token_returns_false_contract_type)
     vault = deployer.deploy(project.Vault, token.address)
     
     # user1 has 0 tokens, the transferFrom inside deposit will return False
@@ -454,12 +451,11 @@ def test_non_standard_erc20_returns_false(deployer, user1):
         
 
 @pytest.mark.unit
-def test_non_standard_erc20_withdrawals_return_false(deployer, user1):
+def test_non_standard_erc20_withdrawals_return_false(deployer, user1, mock_token_returns_false_contract_type):
     """
     Test that withdraw, withdrawAll, and emergencyWithdraw revert if token transfer returns False
     """
-    import ape
-    token = project.MockTokenReturnsFalse.deploy(sender=deployer)
+    token = deployer.deploy(mock_token_returns_false_contract_type)
     vault = deployer.deploy(project.Vault, token.address)
     
     # Give user1 some tokens to deposit successfully
@@ -476,9 +472,8 @@ def test_non_standard_erc20_withdrawals_return_false(deployer, user1):
         vault.withdraw(vault.shares(user1), sender=user1)
 
 @pytest.mark.unit
-def test_withdrawAll_erc20_returns_false(deployer, user1):
-    import ape
-    token = project.MockTokenReturnsFalse.deploy(sender=deployer)
+def test_withdrawAll_erc20_returns_false(deployer, user1, mock_token_returns_false_contract_type):
+    token = deployer.deploy(mock_token_returns_false_contract_type)
     vault = deployer.deploy(project.Vault, token.address)
     amount = 100 * 10**18
     token.transfer(user1, amount, sender=deployer)
@@ -489,9 +484,8 @@ def test_withdrawAll_erc20_returns_false(deployer, user1):
         vault.withdrawAll(sender=user1)
 
 @pytest.mark.unit
-def test_emergencyWithdraw_erc20_returns_false(deployer, user1):
-    import ape
-    token = project.MockTokenReturnsFalse.deploy(sender=deployer)
+def test_emergencyWithdraw_erc20_returns_false(deployer, user1, mock_token_returns_false_contract_type):
+    token = deployer.deploy(mock_token_returns_false_contract_type)
     vault = deployer.deploy(project.Vault, token.address)
     amount = 100 * 10**18
     token.transfer(deployer, amount, sender=deployer)
